@@ -1,7 +1,5 @@
 import torch
 from glasses_dataset import CustomImageDataset
-import torchvision
-import torch.nn as nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
@@ -9,45 +7,34 @@ import matplotlib.pyplot as plt
 def generate(device):
     batch_size = 1
     cid = CustomImageDataset(is_train=False)
-    dataloader = DataLoader(cid, batch_size=batch_size, shuffle=False)
+    dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
     model = torch.load("models/cnn_trans.h5")
+    model.eval()
     model.to(device)
-    x = None
-    y = None
-    count = 0
-    for (x, y) in dataloader:
-        z = x.cpu()
-        z = z.squeeze()
-        z = torch.permute(z, (1, 2, 0))
-        z = z.detach().numpy()
-        plt.imshow(z)
-        plt.show()
+    correct = 0
+    total = 0
+    it = iter(dataloader)
+    (x,y) = next(it)
+    x = x.to(device)
+    x.requires_grad_()
+    y = y.to(device)
+    y_hat = model(x)
+    output_idx = y_hat.argmax()
+    output_max = y_hat[0, output_idx]
+    output_max.backward()
+    saliency, _ = torch.max(x.grad.data.abs(), dim=1)
+    saliency = saliency.reshape(224, 224)
+    image = x.reshape(-1, 224, 224)
+    fig, ax = plt.subplots(1, 2)
+    ax[0].imshow(image.cpu().detach().numpy().transpose(1, 2, 0))
+    ax[0].axis('off')
+    ax[1].imshow(saliency.cpu(), cmap='hot')
+    ax[1].axis('off')
+    plt.tight_layout()
+    fig.suptitle('The Image and Its Saliency Map')
+    plt.show()
 
-        x = x.to(device)
-        x.requires_grad = True
-        y = y.to(device)
 
-        if y[0] != 1:
-            continue
-
-        y_hat = model(x)
-        index = y_hat.argmax()
-        final = y_hat[0,index]
-        final.backward()
-        x = x.grad
-        x = torch.abs(x)
-        max_val = torch.max(x)
-        scale = float(255/max_val)
-        #x = x * scale
-        x = x.squeeze()
-        x = torch.permute(x, (1, 2, 0))
-        x = torch.max(x, dim=2)[0]
-        x = x.cpu().detach().numpy()
-        plt.imshow(x, cmap="hot")
-        plt.show()
-        count += 1
-        if count == 10:
-            break
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    test(device)
+    generate(device)

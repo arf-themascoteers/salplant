@@ -12,25 +12,32 @@ import matplotlib.pyplot as plt
 
 class CustomImageDataset(Dataset):
     def __init__(self, is_train=True):
-        self.file = "data/train.csv"
+        file = "data/train.csv"
+        prefix = "Train"
         if is_train is False:
-            self.file = "data/test.csv"
-        self.img_labels = pd.read_csv(self.file)
-        self.img_dir = "data/faces"
+            file = "data/test.csv"
+            prefix = "Test"
+        self.img_labels = pd.read_csv(file)
+        self.img_dir = "data/images"
         self.transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.CenterCrop(178),
-            transforms.Resize(64),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         ])
+        self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
 
     def __len__(self):
         return len(self.img_labels)
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
+        image_with_ext = self.images[idx]
+        img_path = os.path.join(self.img_dir, image_with_ext)
         image = PIL.Image.open(img_path)
         image = self.transforms(image)
-        label = self.img_labels.iloc[idx, 1]
+
+        name = image_with_ext[0:-4]
+        label = self.img_labels[self.img_labels["image_id"] == name].iloc[0]["healthy"]
         return image, torch.tensor(label)
 
 
