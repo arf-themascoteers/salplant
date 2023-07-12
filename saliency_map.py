@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 
 
 def generate(device):
+    torch.manual_seed(9)
     batch_size = 1
     cid = CustomImageDataset(is_train=False)
-    dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(cid, batch_size=batch_size, shuffle=False)
     model = torch.load("cnn_trans.h5")
     model.eval()
     model.to(device)
@@ -18,6 +19,7 @@ def generate(device):
     x = x.to(device)
     x.requires_grad_()
     y = y.to(device)
+    print(y)
     y_hat = model(x)
     output_idx = y_hat.argmax()
     output_max = y_hat[0, output_idx]

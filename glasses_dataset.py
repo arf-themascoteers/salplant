@@ -41,7 +41,7 @@ class CustomImageDataset(Dataset):
         image = self.transforms(image)
 
         name = image_with_ext[0:-4]
-        label = self.img_labels[self.img_labels["image_id"] == name].iloc[0]["healthy"]
+        label = self.img_labels[self.img_labels["image_id"] == name].iloc[0]["rust"]
         return image, torch.tensor(label)
 
 

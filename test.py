@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 
 
 def test(device):
-    batch_size = 50
+    batch_size = 30
     cid = CustomImageDataset(is_train=False)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
     model = torch.load("cnn_trans.h5")
@@ -17,9 +17,9 @@ def test(device):
         y = y.to(device)
         y_hat = model(x)
         pred = torch.argmax(y_hat, dim=1, keepdim=True)
-        correct += pred.eq(y.data.view_as(pred)).sum()
+        correct += pred.eq(y.data.view_as(pred)).sum().item()
         total += x.shape[0]
-        print(f'Total:{total}, Correct:{correct}, Accuracy:{correct/total*100:.2f}')
+    print(f'Total:{total}, Correct:{correct}, Accuracy:{correct/total*100:.2f}')
 
 
 if __name__ == "__main__":
