@@ -14,8 +14,8 @@ class CustomImageDataset(Dataset):
     def __init__(self, is_train=True):
         file = "data/train.csv"
         prefix = "Train"
-        self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
         self.img_dir = "data/images"
+        self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
         train, test = sklearn.model_selection.train_test_split(self.images,train_size=0.8)
         if is_train:
             self.images = train
