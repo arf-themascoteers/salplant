@@ -1,18 +1,18 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
+from torchvision.models import resnet50, ResNet50_Weights
 
 
 class OurMachine(nn.Module):
     def __init__(self):
         super().__init__()
-        self.resnet = torchvision.models.resnet18(pretrained=True)
+        self.resnet = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
         number_input = self.resnet.fc.out_features
         self.fc = nn.Sequential(
-            nn.Linear(number_input, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Linear(256, 2)
+            nn.Linear(number_input, 10),
+            nn.LeakyReLU(),
+            nn.Linear(10, 2)
         )
 
         for param in self.resnet.layer1.parameters():

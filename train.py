@@ -6,7 +6,7 @@ from traditional_machine import TraditionalMachine
 
 
 def train(device):
-    batch_size = 1000
+    batch_size = 100
     cid = CustomImageDataset(is_train=True)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
     model = TraditionalMachine()
