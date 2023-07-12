@@ -1,5 +1,5 @@
 import os
-import sklearn
+from sklearn import model_selection
 import PIL.Image
 import pandas as pd
 import torch
@@ -16,7 +16,7 @@ class CustomImageDataset(Dataset):
         prefix = "Train"
         self.img_dir = "data/images"
         self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
-        train, test = sklearn.model_selection.train_test_split(self.images,train_size=0.8)
+        train, test = model_selection.train_test_split(self.images,train_size=0.8)
         if is_train:
             self.images = train
         else:
@@ -32,7 +32,7 @@ class CustomImageDataset(Dataset):
         ])
 
     def __len__(self):
-        return len(self.img_labels)
+        return len(self.images)
 
     def __getitem__(self, idx):
         image_with_ext = self.images[idx]
