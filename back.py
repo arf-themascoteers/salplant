@@ -10,7 +10,7 @@ def test(device):
     batch_size = 1
     cid = CustomImageDataset(is_train=False)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=False)
-    model = torch.load("models/cnn_trans.h5")
+    model = torch.load("cnn_trans.h5")
     model.to(device)
     x = None
     y = None

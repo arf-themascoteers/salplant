@@ -8,7 +8,7 @@ def generate(device):
     batch_size = 1
     cid = CustomImageDataset(is_train=False)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
-    model = torch.load("models/cnn_trans.h5")
+    model = torch.load("cnn_trans.h5")
     model.eval()
     model.to(device)
     correct = 0

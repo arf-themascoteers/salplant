@@ -6,7 +6,7 @@ from traditional_machine import TraditionalMachine
 
 
 def train(device):
-    batch_size = 100
+    batch_size = 50
     cid = CustomImageDataset(is_train=True)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=True)
     model = TraditionalMachine()
@@ -30,7 +30,7 @@ def train(device):
             batch_number += 1
             print(f'Epoch:{epoch + 1} (of {num_epochs}), Batch: {batch_number} of ({n_batches}), Loss:{loss.item():.4f}')
 
-    torch.save(model, 'models/cnn_trans.h5')
+    torch.save(model, 'cnn_trans.h5')
 
 
 if __name__ == "__main__":
