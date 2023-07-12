@@ -1,5 +1,5 @@
 import os
-
+import sklearn
 import PIL.Image
 import pandas as pd
 import torch
@@ -14,18 +14,22 @@ class CustomImageDataset(Dataset):
     def __init__(self, is_train=True):
         file = "data/train.csv"
         prefix = "Train"
-        if is_train is False:
-            file = "data/test.csv"
-            prefix = "Test"
-        self.img_labels = pd.read_csv(file)
+        self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
         self.img_dir = "data/images"
+        train, test = sklearn.model_selection.train_test_split(self.images,train_size=0.8)
+        if is_train:
+            self.images = train
+        else:
+            self.images = test
+
+        self.img_labels = pd.read_csv(file)
+
         self.transforms = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         ])
-        self.images = [filename for filename in os.listdir(self.img_dir) if filename.startswith(prefix)]
 
     def __len__(self):
         return len(self.img_labels)
