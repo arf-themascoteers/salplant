@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 
 
 def generate(device):
-    torch.manual_seed(9)
     batch_size = 1
-    cid = CustomImageDataset(is_train=False)
+    cid = CustomImageDataset(is_train=True)
     dataloader = DataLoader(cid, batch_size=batch_size, shuffle=False)
     model = torch.load("cnn_trans.h5")
     model.eval()
@@ -25,7 +24,11 @@ def generate(device):
     output_max = y_hat[0, output_idx]
     output_max.backward()
     saliency, _ = torch.max(x.grad.data.abs(), dim=1)
+    saliency = saliency/torch.max(saliency)
     saliency = saliency.reshape(224, 224)
+    mean = torch.mean(saliency)
+
+    saliency[saliency > 0.5] = 0.1
     image = x.reshape(-1, 224, 224)
     fig, ax = plt.subplots(1, 2)
     ax[0].imshow(image.cpu().detach().numpy().transpose(1, 2, 0))
